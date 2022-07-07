@@ -1,0 +1,11 @@
+# If you are using Google chrome
+https://chromedriver.chromium.org/downloads
+
+# If you are using Microsoft Edge
+https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+
+# If you are using Firefox
+https://github.com/mozilla/geckodriver/releases
+
+# If you are using Safari
+It already comes pre installed with Mac OS X. The path to the driver is: /usr/bin/safaridriver

@@ -4,7 +4,7 @@ from selenium.common import TimeoutException, NoSuchElementException, ElementNot
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.safari.service import Service
+from selenium.webdriver.<NAME OF BROWSER>.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 
 # User data
@@ -15,9 +15,9 @@ job_location = input("Enter job location: ")
 phone_number = input("Enter your phone number: ")
 
 # Initialising web driver
-WEBDRIVER_PATH = "/usr/bin/safaridriver"
+WEBDRIVER_PATH = <PATH TO DRIVER>
 web_driver_service = Service(executable_path=WEBDRIVER_PATH)
-driver = webdriver.Safari(service=web_driver_service)
+driver = webdriver.<NAME OF BROWSER>(service=web_driver_service)
 driver.maximize_window()
 JOB_SEARCH_URL = 'https://www.linkedin.com/jobs/search/'
 driver.get(JOB_SEARCH_URL)
