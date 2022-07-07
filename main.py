@@ -1,6 +1,6 @@
 import time
 from selenium import webdriver
-from selenium.common import TimeoutException
+from selenium.common import TimeoutException, NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -95,36 +95,68 @@ finally:
     easy_to_apply_filter.click()
     time.sleep(3)
 
-# Press Easy Apply
-try:
-    element_present = EC.presence_of_element_located(
-        (By.CSS_SELECTOR, ".jobs-apply-button--top-card .jobs-apply-button"))
-    WebDriverWait(driver, timeout).until(element_present)
-except TimeoutException:
-    print("Timed out waiting for page to load")
-finally:
-    easy_apply = driver.find_element(By.CSS_SELECTOR, ".jobs-apply-button--top-card .jobs-apply-button")
-    easy_apply.click()
-    time.sleep(2)
 
-# Type phone number
-try:
-    element_present = EC.presence_of_element_located((By.CLASS_NAME, "fb-single-line-text__input"))
-    WebDriverWait(driver, timeout).until(element_present)
-except TimeoutException:
-    print("Timed out waiting for page to load")
-finally:
-    phone_field = driver.find_element(By.CLASS_NAME, "fb-single-line-text__input")
-    if phone_field.text == "":
-        phone_field.send_keys(phone_number)
+# Applying for the jobs
+def makeApplication(listing):
+    listing.click()
     time.sleep(1)
 
-# Submit application
-try:
-    element_present = EC.presence_of_element_located((By.CSS_SELECTOR, "footer button"))
-    WebDriverWait(driver, timeout).until(element_present)
-except TimeoutException:
-    print("Timed out waiting for page to load")
-finally:
-    submit = driver.find_element(By.CSS_SELECTOR, "footer button")
-    submit.click()
+    # Press Easy Apply button
+    try:
+        driver.find_element(By.CSS_SELECTOR, '.jobs-unified-top-card__content--two-pane button.jobs-apply-button').click()
+        time.sleep(1)
+
+        # Type phone number
+        try:
+            global element_present
+            element_present = EC.presence_of_element_located((By.CLASS_NAME, "fb-single-line-text__input"))
+            WebDriverWait(driver, timeout).until(element_present)
+        except TimeoutException:
+            print("Timed out waiting for page to load")
+        finally:
+            phone_field = driver.find_element(By.CLASS_NAME, "fb-single-line-text__input")
+            if phone_field.text == "":
+                phone_field.send_keys(Keys.COMMAND + "a")
+                time.sleep(1)
+                phone_field.send_keys(Keys.BACK_SPACE)
+                time.sleep(1)
+                phone_field.send_keys(phone_number)
+            time.sleep(1)
+
+        driver.find_element(By.CSS_SELECTOR, 'form .artdeco-button--primary').click()
+        time.sleep(1)
+        driver.find_element(By.CSS_SELECTOR, 'form .artdeco-button--primary').click()
+        time.sleep(1)
+        driver.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-content .artdeco-button--primary').click()
+        time.sleep(1)
+
+        try:
+            driver.find_element(By.CLASS_NAME, 'artdeco-modal__dismiss').click()
+            time.sleep(1)
+            driver.find_element(By.CSS_SELECTOR, '.artdeco-modal__actionbar .artdeco-button--primary').click()
+        except NoSuchElementException:
+            print('Applied!')
+            try:
+                driver.find_element(By.CLASS_NAME, 'artdeco-modal__dismiss').click()
+            except NoSuchElementException:
+                print('There was no questions')
+        else:
+            print('Filling out a form is required!')
+
+    except NoSuchElementException:
+        print('Already applied')
+    except ElementNotInteractableException:
+        print('LinkedIn application loading error')
+        time.sleep(2)
+        close_button = driver.find_element(By.CLASS_NAME, "artdeco-modal__dismiss")
+        close_button.click()
+        time.sleep(2)
+
+
+# Get list of available jobs
+all_job_listings = driver.find_elements(By.CLASS_NAME, 'job-card-container--clickable')
+print(len(all_job_listings))
+
+for company in all_job_listings:
+    makeApplication(company)
+    time.sleep(1)
